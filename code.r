@@ -10,11 +10,10 @@ library(cowplot)
 library(vtreat)
 library(dplyr)
 
-
 # Read text file
-Train_Base = read.table("train.csv",header = TRUE , sep = ",")
-Test_Base  = read.table("test.csv",header = TRUE , sep = ",")
-Sub_Base = read.table("sample_submission.csv",header = TRUE , sep = ",")
+Train_Base = read.table("data/Train.csv",header = TRUE , sep = ",")
+Test_Base  = read.table("data/Test.csv",header = TRUE , sep = ",")
+Sub_Base = read.table("data/sample_submission.csv",header = TRUE , sep = ",")
 
 ###################### Train #############################
 ## Replace Missing vaues in Item_Weight in other data
@@ -24,7 +23,6 @@ Test_Base <- cbind(Test_Base, c(rep(0, times=5681)))
 colnames(Test_Base)[12] <- 'Item_Outlet_Sales'
 combined <- rbind(Train_Base, Test_Base)
 
-# Missing_Weight
 combined[is.na(combined)] <- 0
 identifier <- unique(combined$Item_Identifier)
 for (id in identifier){
@@ -34,13 +32,8 @@ for (id in identifier){
 
 Train_Base$Item_Weight <- combined$Item_Weight[1:8523]
 
-## Missing_Visibility
-for (id in identifier){
-  visibility <- mean(combined[combined$Item_Identifier==id,"Item_Visibility"])
-  combined[combined$Item_Identifier==id,"Item_Visibility"] <- visibility
-}
-Train_Base$Item_Visibility <- combined$Visibility[1:8523]
-
+## REplace 0 in Item_Visibility by Mean
+Train_Base$Item_Visibility[Train_Base$Item_Visibility == 0]<- mean(Train_Base$Item_Visibility)
 
 ## Replace year with corresponding number 
 Train_Base$Outlet_Establishment_Year <- 2013 - Train_Base$Outlet_Establishment_Year
@@ -51,11 +44,10 @@ Train_Base$Item_Fat_Content[Train_Base$Item_Fat_Content == 'low fat'] <- 'Low Fa
 Train_Base$Item_Fat_Content[Train_Base$Item_Fat_Content == 'reg'] <- 'Regular'
 Train_Base$Item_Fat_Content = droplevels(Train_Base$Item_Fat_Content)
 
-## Missing Outlet_Size
-Train_Base$Outlet_Size[Train_Base$Outlet_Identifier=="OUT010"] <- "Small"
-Train_Base$Outlet_Size[Train_Base$Outlet_Identifier=="OUT017"] <- "Medium"
-Train_Base$Outlet_Size[Train_Base$Outlet_Identifier=="OUT045"] <- "Medium"
+## Replace missing values in Outle_Size by mode,採用眾數
+Train_Base$Outlet_Size[Train_Base$Outlet_Size == ""] <- 'Median'
 
+## 刪除多餘的因子
 Train_Base$Outlet_Size = droplevels(Train_Base$Outlet_Size)
 
 
@@ -77,8 +69,7 @@ Train_Base =  subset(Train_Base,select = -c(Item_Identifier))
 Test_Base$Item_Weight <- combined$Item_Weight[8523:14203]
 
 ## REplace 0 in Item_Visibility by Mean
-
-Test_Base$Item_Visibility <- Test_Base$Visibility[8523:14203]
+Test_Base$Item_Visibility[Test_Base$Item_Visibility == 0]<- mean(Test_Base$Item_Visibility)
 
 ## Replace year with corresponding number 
 Test_Base$Outlet_Establishment_Year <- 2013 - Test_Base$Outlet_Establishment_Year
@@ -90,10 +81,7 @@ Test_Base$Item_Fat_Content[Test_Base$Item_Fat_Content == 'reg'] <- 'Regular'
 Test_Base$Item_Fat_Content = droplevels(Test_Base$Item_Fat_Content)
 
 ## Replace missing values in Outle_Size by mode
-Test_Base$Outlet_Size[Test_Base$Outlet_Identifier=="OUT010"] <- "Small"
-Test_Base$Outlet_Size[Test_Base$Outlet_Identifier=="OUT017"] <- "Medium"
-Test_Base$Outlet_Size[Test_Base$Outlet_Identifier=="OUT045"] <- "Medium"
-
+Test_Base$Outlet_Size[Test_Base$Outlet_Size == ""] <- 'Median'
 Test_Base$Outlet_Size = droplevels(Test_Base$Outlet_Size)
 
 ## Convert Outlet_Location_Type into numeric
@@ -108,7 +96,6 @@ Test_Base$Item_Outlet_Sales = NULL
 Test_Base =  subset(Test_Base,select = -c(Item_Identifier))
 
 ## Create One Hot Data Train
-
 features <- setdiff(names(Train_Base), "Item_Volume")
 
 onehot <- vtreat::designTreatmentsZ(Train_Base, features, verbose = FALSE)
@@ -132,6 +119,10 @@ onehot_value <- onehot %>%
 
 Test_Base_Predict <- vtreat::prepare(onehot,Test_Base,varRestriction = onehot_value) %>% as.data.frame()
 
+
+
+
+
 ## Decision Tree
 ctrl = rpart.control(maxdepth = 4,minsplit = 20,minbucket = 7) 
 dt1 = rpart(Item_Volume ~. , data = Train_Base_Predict,parms =  c(split = "gini"),control = ctrl)
@@ -141,17 +132,6 @@ Sub_Base_Tree$Item_Outlet_Sales = PredictTree1*Test_Base_Predict$Item_MRP
 write.csv(Sub_Base_Tree, file = "Sub_v1_Tree.csv", row.names = F, quote = F)
 
 ## Random Forest
-
-# for(i in c(50:250)){
-#   set.seed(i)
-#   rf1 =randomForest(Item_Volume ~ . ,data = Train_Base_Predict,ntree = 500,mtry = 30,maxnodes = 40)
-#   PredictForest1 <- predict(rf1, newdata = Test_Base_Predict[1:40])
-#   Sub_Base_RF = Sub_Base
-#   Sub_Base_RF$Item_Outlet_Sales = PredictForest1*Test_Base_Predict$Item_MRP
-#   write.csv(Sub_Base_RF, file = paste0(i,".csv"), row.names = F, quote = F)
-# }
-
-
 set.seed(44)
 rf1 =randomForest(Item_Volume ~ . ,data = Train_Base_Predict,ntree = 500,mtry = 30,maxnodes = 40)
 
@@ -162,10 +142,11 @@ write.csv(Sub_Base_RF, file = "Sub_v1_RF.csv", row.names = F, quote = F)
 
 ## Linear Regression with multiple variables
 lr1 =lm(Item_Volume ~ . ,data = Train_Base_Predict)
-PredictLinear1 <- predict(lr1,newdata = Test_Base_Predict[1:40])
+PredictLinear1 <- predict(lr1, newdata = Test_Base_Predict[1:40])
 Sub_Base_LM = Sub_Base
 Sub_Base_LM$Item_Outlet_Sales = PredictLinear1*Test_Base_Predict$Item_MRP
-write.csv(Sub_Base_LM[,2:ncol(Sub_Base_LM)], file = "Sub_v1_LM.csv", row.names = F, quote = F)
+Sub_Base_LM$Item_Outlet_Sales
+write.csv(Sub_Base_LM, file = "Sub_v1_LM.csv", row.names = F, quote = F)
 
 ## XGbroost
 param_list = list(
