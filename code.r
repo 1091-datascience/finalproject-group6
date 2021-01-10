@@ -11,12 +11,6 @@ library(vtreat)
 library(dplyr)
 
 
-# Function to calculate Mode
-Mode_Calc <- function(x){
-  single = unique(x)
-  single[which.max(tabulate(x))]
-}
-
 # Read text file
 Train_Base = read.table("train.csv",header = TRUE , sep = ",")
 Test_Base  = read.table("test.csv",header = TRUE , sep = ",")
