@@ -120,9 +120,6 @@ onehot_value <- onehot %>%
 Test_Base_Predict <- vtreat::prepare(onehot,Test_Base,varRestriction = onehot_value) %>% as.data.frame()
 
 
-
-
-
 ## Decision Tree
 ctrl = rpart.control(maxdepth = 4,minsplit = 20,minbucket = 7) 
 dt1 = rpart(Item_Volume ~. , data = Train_Base_Predict,parms =  c(split = "gini"),control = ctrl)
