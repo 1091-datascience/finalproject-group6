@@ -7,6 +7,8 @@
 * 陳子賢 107703048 
 * 李元亨 107703004 
 
+### Main Code (code.r) is moved from the master branch, please check the contributors from there, Thanks! 
+
 ### Goal
 Predict the Big Mart Sales Prediction Problem.
 ### Demo 
