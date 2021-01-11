@@ -29,6 +29,7 @@ Rscript code.r
     Using this model, BigMart will try to understand the properties of products and outlets which play a key role in increasing sales.
 * Input format
   * One file formatted with `.csv`
+  * We have train (8523) and test (5681) data set.
   * Features of dataset:
 
     | Variabel | Description | 
