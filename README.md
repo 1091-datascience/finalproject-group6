@@ -25,73 +25,88 @@ Rscript code.r
 * Input format
   * One file formatted with `.csv`
   * Features of dataset:
-    * Item_Identifier	: Unique product ID
-    * Item_Weight	Weight of product
-    * Item_Fat_Content	Whether the product is low fat or not
-    * Item_Visibility	The % of total display area of all products in a * store allocated to the particular product
-    * Item_Type	The category to which the product belongs
-    * Item_MRP	Maximum Retail Price (list price) of the product
-    * Outlet_Identifier	Unique store ID
-    * Outlet_Establishment_Year	The year in which store was established
-    * Outlet_Size	The size of the store in terms of ground area covered
-    * Outlet_Location_Type	The type of city in which the store is located
-    * Outlet_Type	Whether the outlet is just a grocery store or some sort of supermarket
-    Item_Outlet_Sales	Sales of the product in the particular store. This is the outcome variable to be predicted.
+   
 
     | Variabel | Description | 
     | :---: | :---: |
-    | Item_Identifier | 301 |
-    | Item_Weight | 301 |
-    | Item_Fat_Content | 301 |
-    | Item_Visibility | 301 |
-    | Item_Weight | 301 |
-    | Item_Weight | 301 |
-    | Item_Weight | 301 |
-    | Item_Weight | 301 |
-    | Item_Weight | 301 |
-    | Item_Weight | 301 |
-    | Item_Weight | 301 |
+    | Item_Identifier | Unique product ID|
+    | Item_Weight |Weight of product |
+    | Item_Fat_Content |Whether the product is low fat or not |
+    | Item_Visibility |The % of total display area of all products in a * store allocated to the particular product |
+    | Item_Type|The category to which the product belongs	|
+    | Item_MRP	|Maximum Retail Price (list price) of the product|
+    | Outlet_Identifier	|Unique store ID|
+    | Outlet_Establishment_Year	|The year in which store was established|
+    | Outlet_Size	|The size of the store in terms of ground area covered|
+    | Outlet_Location_Type	The type of city in which the store is located|
+    | Outlet_Type	|Whether the outlet is just a grocery store or some sort of supermarket|
+    | Item_Outlet_Sales	|Sales of the product in the particular store. This is the outcome variable to be predicted.
+
 
 * Any preprocessing?
   * Handle missing data
-    * total_bedrooms has 207 missing value.
-      ![](docs/images/total_bedrooms_missing.png)
-  * Scale value
-    * population_per_household
-    * bedrooms_per_room 
-    * rooms_per_household
-    ![](docs/images/correlation_matrix.png)
+    * Item_Weight with NA value
+    * Item_Visibility with 0 value
+    * Outlet_Size with “” (Null String)
+  * New feature
+    * Item_Volume
   
 ### code
 
 * Which method do you use?
-  * Linear regression / Lasso / Ridge / Elastic net 
-  * SVM / RF / GBT / Stacking
+  * Decision Tree
+  * Random Forest ✓ ( The Best )
+  * LM
+  * XGBoost
+
 * What is a null model for comparison?
-  * Linear regression with no regressor.
+<!--- TODO -->
 * How do your perform evaluation? ie. Cross-validation, or extra separated data
-  * k-fold
+  * k-fold Cross-validation
 
 ### results
 
-* Which metric do you use ?
-  * MAPE
 * Is your improvement significant?
-  * Yes ! We improve MAPE from 1.84 to 1.76
+<!--- TODO -->
 * What is the challenge part of your project?
-  * Tuning
+<!--- TODO -->
 
 ## Reference
 * Code/implementation which you include/reference (__You should indicate in your presentation if you use code for others. Otherwise, cheating will result in 0 score for final project.__)
+    * https://datahack.analyticsvidhya.com/contest/practice-problem-big-mart-sales-iii/
+    * https://www.kaggle.com/usamakhan8199/big-mart-prediction-top-100-with-optimisation 
+    * https://www.kaggle.com/bgsumanth/plots-in-r
+    * https://rpubs.com/prateekjoshi565/381886?fbclid=IwAR3G67crQULEmecWedgaIysWx4OuA9DzWdY8S2Km96xv5wf7IW2gN7z2Z2Q
+    * https://github.com/Param-Trivedi/Big-Mart-Sales-Data-Prediction
+
 * Packages you use
-  * mice, ggplot2, dplyr, gapminder, scales, hrbrthemes, viridis, ggcorrplot, rBayesianOptimization, randomForest, rpart, tidyverse, caret, pROC, regclass, adabag, alr4, DMwR, nnet,  
+```R
+library(randomForest)
+library(onehot)
+library(tree)
+library(rpart)
+library(h2o)
+library(xgboost)
+library(vtreat)
+
+# To import data in datafram
+library(data.table)
+# To make used of pipelining process and cleaning of data and descriptive analysis of data
+library(dplyr)
+# To visualize the data
+library(ggplot2)
+# To make a correlation plot
+library(corrplot)
+# To tune the model, and for feature selection
+library(caret)
+# To clean the data
+library(tidyverse)
+# To create a correlation heatmap
+library(cowplot)
+# To determine metrics of model
+library(Metrics)
+
+```
 * Related publications
-  *  https://jmyao17.github.io/Kaggle/California_Housing_Prices.html
-  *  https://rpubs.com/ablythe/520912
-  *  [In a random forest, is larger %IncMSE better or worse? (2016).](https://bit.ly/2BeuUAR
-  *  Lander, J. P. (2017). R for Everyone: Advanced Analytics and Graphics, 2nd Edition.
-  *  Ozdemir, S., Susarla, D. (2018). Feature Engineering Made Easy.
-  *  Ariga, M., Nakayama, S., Nishibayashi, T. (2018). Machine Learning at Work
-
-
+ 
 
