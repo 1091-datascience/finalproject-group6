@@ -44,10 +44,10 @@ Train_Base$Item_Fat_Content[Train_Base$Item_Fat_Content == 'low fat'] <- 'Low Fa
 Train_Base$Item_Fat_Content[Train_Base$Item_Fat_Content == 'reg'] <- 'Regular'
 Train_Base$Item_Fat_Content = droplevels(Train_Base$Item_Fat_Content)
 
-## Replace missing values in Outle_Size by mode,採用眾數
+## Replace missing values in Outle_Size by mode,?艦帣???
 Train_Base$Outlet_Size[Train_Base$Outlet_Size == ""] <- 'Median'
 
-## 刪除多餘的因子
+## ?R???h?l???]?l
 Train_Base$Outlet_Size = droplevels(Train_Base$Outlet_Size)
 
 
@@ -118,6 +118,83 @@ onehot_value <- onehot %>%
   magrittr::use_series(varName)
 
 Test_Base_Predict <- vtreat::prepare(onehot,Test_Base,varRestriction = onehot_value) %>% as.data.frame()
+
+
+##Cross-validation
+dt_list <- c()
+rf_list <- c()
+lr_list <- c()
+xgb_list <- c()
+
+#Randomly shuffle the data
+Train_Base_Predict<-Train_Base_Predict[sample(nrow(Train_Base_Predict)),]
+for(k in 5:10){
+  message("K fold: ", k)
+  fold <- k
+  folds <- cut(seq(1,nrow(Train_Base_Predict)),breaks=fold,labels=FALSE)
+  total_dt <- 0
+  total_rf <- 0
+  total_lr <- 0
+  total_xgb <- 0 
+  
+  for(i in 1:fold){
+    message("Round: ", i)
+    validationDataIndexes <- which(folds==i,arr.ind=TRUE)
+    validationData <- Train_Base_Predict[validationDataIndexes, ]
+    #print(dim(validationData))
+    trainData <- Train_Base_Predict[-validationDataIndexes, ]
+    #print(dim(trainData))
+    
+    ## Decision Tree
+    ctrl = rpart.control(maxdepth = 4,minsplit = 20,minbucket = 7) 
+    dt1 = rpart(Item_Volume ~. , data = trainData,parms =  c(split = "gini"),control = ctrl)
+    validation = predict(dt1,newdata = validationData[1:40])
+    print(rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP))
+    total_dt = total_dt+rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP)
+    
+    ## Random Forest
+    rf1 =randomForest(Item_Volume ~ . ,data = trainData,ntree = 100,mtry = 30,maxnodes = 10)
+    validation = predict(rf1,newdata = validationData[1:40])
+    print(rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP))
+    total_rf = total_rf+rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP)
+    
+    ## Linear Regression with multiple variables
+    lr1 =lm(Item_Volume ~ . ,data = trainData)
+    validation = predict(lr1,newdata = validationData[1:40])
+    print(rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP))
+    total_lr = total_lr+rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP)
+    
+    ## XGbroost
+    param_list = list(
+      objective = "reg:linear",
+      eta=0.01,
+      gamma = 1,
+      max_depth=6,
+      subsample=0.8,
+      colsample_bytree=0.5
+    )
+    dtrain = xgb.DMatrix(data = as.matrix(trainData[1:40]), label= trainData$Item_Volume)
+    dtest = xgb.DMatrix(data = as.matrix(validationData[1:40]))
+    xgb_model = xgboost(data = dtrain, params = param_list, nrounds = 430)
+    validation <- predict(xgb_model, dtest)
+    print(rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP))
+    total_xgb = total_xgb+rmse(validationData$Item_Volume*validationData$Item_MRP,validation*validationData$Item_MRP)
+  }
+  print("average rmse:")
+  print(total_dt/fold)
+  print(total_rf/fold)
+  print(total_lr/fold)
+  print(total_xgb/fold)
+  
+  dt_list <- c(dt_list,total_dt/fold)
+  rf_list <- c(rf_list,total_rf/fold)
+  lr_list <- c(lr_list,total_lr/fold)
+  xgb_list <- c(xgb_list,total_xgb/fold)
+}
+
+out_data<-data.frame(K_fold=c(5,6,7,8,9,10), Decision_Tree=dt_list,  Random_Forest=rf_list, Linear_Regression=lr_list, XGbroost=xgb_list, stringsAsFactors = F)
+print(out_data)
+write.csv(out_data, file="k_fold.csv", row.names = F, quote = F)
 
 
 ## Decision Tree
