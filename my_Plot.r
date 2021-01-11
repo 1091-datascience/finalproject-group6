@@ -24,7 +24,7 @@ library(cowplot)
 # To determine metrics of model
 library(Metrics)
 
-train = read.table("train.csv", header = T, sep = ",")
+train = read.table("data/Train.csv", header = T, sep = ",")
 
 train$Outlet_Size = ifelse(train$Outlet_Size == "", 
                            "Medium", train$Outlet_Size)
@@ -68,20 +68,6 @@ h3 <- ggplot(train,aes(Item_MRP)) +
 # Creating a canvas and displaying the plots
 second_row_2 <-  plot_grid(h1, h2, ncol = 2)
 plot_grid(h3, second_row_2, nrow = 2)
-
-
-ggplot(train, aes(Item_Visibility, Item_MRP)) + geom_point(aes(color = Item_Type)) +
-  scale_x_continuous("Item Visibility", breaks = seq(0,0.35,0.05))+
-  scale_y_continuous("Item MRP", breaks = seq(0,270,by = 30))+ 
-  theme_bw() + labs(title="Scatterplot") + facet_wrap( ~ Item_Type)
-
-ggplot(train, aes(Item_Visibility, Item_MRP)) + geom_point(aes(color = Item_Type)) +
-  scale_x_continuous("Item Visibility", breaks = seq(0,0.35,0.05))+
-  scale_y_continuous("Item MRP", breaks = seq(0,270,by = 30))+
-  theme_bw() + labs(title="Scatterplot")
-
-## REplace 0 in Item_Visibility by Mean
-train$Item_Visibility[train$Item_Visibility == 0]<- mean(train$Item_Visibility)
 
 ggplot(train, aes(Item_Visibility, Item_MRP)) + geom_point(aes(color = Item_Type)) +
   scale_x_continuous("Item Visibility", breaks = seq(0,0.35,0.05))+
