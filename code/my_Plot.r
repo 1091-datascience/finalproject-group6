@@ -25,7 +25,7 @@ library(cowplot)
 library(Metrics)
 
 # read data
-train = read.table("data/Train.csv", header = T, sep = ",")
+train = read.table("../data/Train.csv", header = T, sep = ",")
 
 train$Outlet_Size = ifelse(train$Outlet_Size == "", 
                            "Medium", train$Outlet_Size)

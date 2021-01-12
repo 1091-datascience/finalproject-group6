@@ -12,9 +12,9 @@ library(randomForest)
 library(xgboost)
 
 # Read text file
-Train_Base = read.table("data/Train.csv",header = TRUE , sep = ",")
-Test_Base  = read.table("data/Test.csv",header = TRUE , sep = ",")
-Sub_Base = read.table("data/sample_submission.csv",header = TRUE , sep = ",")
+Train_Base = read.table("../data/Train.csv",header = TRUE , sep = ",")
+Test_Base  = read.table("../data/Test.csv",header = TRUE , sep = ",")
+Sub_Base = read.table("../data/sample_submission.csv",header = TRUE , sep = ",")
 
 ###################### Train #############################
 ## Replace Missing values in Item_Weight in other data
