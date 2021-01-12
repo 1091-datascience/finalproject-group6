@@ -16,6 +16,13 @@ You should provide an example commend to reproduce your result
 ``` text
 Rscript code.r
 ```
+Running `code.r` is going to output 5 `.csv` files, including
+ 1. `k_fold.csv`
+ 2. `Sub_v1_Tree.csv`
+ 3. `Sub_v1_RF.csv`
+ 4. `Sub_v1_LM.csv`
+ 5. `Sub_v1_XG.csv`
+
 * any on-line visualization
 
 ### data
