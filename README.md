@@ -63,7 +63,7 @@ Running `code.r` is going to output 5 `.csv` files, including
   * New feature
     * Item_Volume
   * One hot encoding
-* more details in [期末簡報.pdf](https://github.com/1091-datascience/finalproject-group6/blob/main/%E6%9C%9F%E6%9C%AB%E7%B0%A1%E5%A0%B1.pdf)
+* more details in [期末簡報.pdf](https://github.com/1091-datascience/finalproject-group6/blob/main/docs/%E6%9C%9F%E6%9C%AB%E7%B0%A1%E5%A0%B1.pdf)
   
 ### code
 
