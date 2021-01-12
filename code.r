@@ -1,14 +1,15 @@
-library(randomForest)
 library(caret)
 library(onehot)
 library(Metrics)
-library(tree)
-library(rpart)
-library(h2o)
-library(xgboost)
 library(cowplot)
 library(vtreat)
 library(dplyr)
+
+library(tree)
+library(rpart)
+library(h2o)
+library(randomForest)
+library(xgboost)
 
 # Read text file
 Train_Base = read.table("data/Train.csv",header = TRUE , sep = ",")
@@ -16,7 +17,7 @@ Test_Base  = read.table("data/Test.csv",header = TRUE , sep = ",")
 Sub_Base = read.table("data/sample_submission.csv",header = TRUE , sep = ",")
 
 ###################### Train #############################
-## Replace Missing vaues in Item_Weight in other data
+## Replace Missing values in Item_Weight in other data
 colSums(is.na(Train_Base))
 
 Test_Base <- cbind(Test_Base, c(rep(0, times=5681)))
