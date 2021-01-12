@@ -55,6 +55,7 @@ Rscript code.r
     * Outlet_Size with “” (Null String)
   * New feature
     * Item_Volume
+  * One hot encoding
   
 ### code
 
