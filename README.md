@@ -80,6 +80,7 @@ Running `code.r` is going to output 5 `.csv` files, including
 ### results
 
 * Is your improvement significant?
+  * competition ranking 26/40204
 <!--- TODO -->
 * What is the challenge part of your project?
 <!--- TODO -->
