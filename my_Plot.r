@@ -24,6 +24,7 @@ library(cowplot)
 # To determine metrics of model
 library(Metrics)
 
+# read data
 train = read.table("data/Train.csv", header = T, sep = ",")
 
 train$Outlet_Size = ifelse(train$Outlet_Size == "", 
@@ -45,7 +46,7 @@ j5 <- ggplot(outletsize_bysales, aes(Outlet_Size, Sales_Mean)) +
 plot_grid(j5)
 
 
-# Continuous Data Analysis (Univariate) Creatin Histograms
+# Continuous Data Analysis (Univariate) Creating Histograms
 
 h1 <-  ggplot(train,aes(Item_Visibility))+
   geom_histogram(bins = 100,binwidth=0.01,color='Black',fill='Sky Blue') +
