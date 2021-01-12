@@ -1,8 +1,8 @@
 # using clf algorithm
-library(randomForest)
 library(tree)
 library(rpart)
 library(h2o)
+library(randomForest)
 library(xgboost)
 
 # performing ont-hot encoding
