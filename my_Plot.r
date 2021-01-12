@@ -1,12 +1,12 @@
+# using clf algorithm
 library(randomForest)
-library(caret)
-library(onehot)
-library(ggplot2)
-library(Metrics)
 library(tree)
 library(rpart)
 library(h2o)
 library(xgboost)
+
+# performing ont-hot encoding
+library(onehot)
 # To import data in datafram
 library(data.table)
 # To make used of pipelining process and cleaning of data and descriptive analysis of data
